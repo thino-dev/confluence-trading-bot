@@ -79,7 +79,7 @@ Layer 1 (Structure) is a mandatory gate — if BOS/CHoCH + Order Block aren't pr
 | Entry timeframe      | M15     | Entry signal triggers                |
 | Micro timeframe      | M5      | Micro structure shift confirmation   |
 | News buffer          | 60 min  | Avoid trading around news events     |
-| Risk per trade       | 1%      | Account risk per position            |
+| Risk per trade       | 2%      | Account risk per position            |
 | Max positions        | 3       | Max simultaneous open trades         |
 | Zone expiry          | 3 bars  | Max candles before zone re-scored    |
 
