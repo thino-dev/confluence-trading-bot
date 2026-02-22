@@ -1,0 +1,24 @@
+# Compiled MQL5 files
+*.ex5
+*.ex4
+
+# MT5 logs and cache
+Logs/
+logs/
+*.log
+
+# Tester files
+Tester/
+
+# Precompiled headers
+*.pch
+
+# OS files
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# IDE
+.vscode/
+*.swp
+*.swo
