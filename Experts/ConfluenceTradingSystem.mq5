@@ -96,6 +96,34 @@ ScoreCard                g_lastScores[MAX_SYMBOLS]; // Cache last score per symb
 int OnInit()
 {
    g_log.SetPrefix("CTS");
+
+   // 0. Risk settings confirmation — prompt user before starting
+   string riskMsg = StringFormat(
+      "=== CONFLUENCE TRADING SYSTEM ===\n\n"
+      "Please confirm your risk settings:\n\n"
+      "  Risk per trade:      %.1f%% of equity\n"
+      "  Max daily loss:      %.1f%%\n"
+      "  Max weekly loss:     %.1f%%\n"
+      "  Max positions:       %d\n\n"
+      "Account equity: $%.2f\n"
+      "Risk per trade: $%.2f\n\n"
+      "Click YES to start trading with these settings.\n"
+      "Click NO to stop — then right-click the EA → Properties → Inputs to adjust.",
+      InpRiskPercent,
+      InpDailyLossLimit,
+      InpWeeklyLossLimit,
+      InpMaxPositions,
+      AccountInfoDouble(ACCOUNT_EQUITY),
+      AccountInfoDouble(ACCOUNT_EQUITY) * InpRiskPercent / 100.0
+   );
+
+   int response = MessageBox(riskMsg, "Risk Settings Confirmation", MB_YESNO | MB_ICONQUESTION);
+   if(response != IDYES)
+   {
+      Print("[CTS] User declined risk settings. EA stopped. Adjust inputs via Properties → Inputs tab.");
+      return INIT_FAILED;
+   }
+
    g_log.Info("=== Confluence Trading System v1.0 Initializing ===");
 
    // 1. Parse symbol list
