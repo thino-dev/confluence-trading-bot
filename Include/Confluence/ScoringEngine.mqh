@@ -156,6 +156,7 @@ public:
          return false;
 
       // Calculate entry/SL/TP
+      // targetSwing = TP target (swing high for longs, swing low for shorts)
       SwingPoint targetSwing;
       if(card.direction == TRADE_LONG)
          m_swing.FindNearestSwingHigh(htfHighs, htfHighCount, card.activeOB.highPrice, targetSwing);
@@ -163,12 +164,21 @@ public:
          m_swing.FindNearestSwingLow(htfLows, htfLowCount, card.activeOB.lowPrice, targetSwing);
 
       if(targetSwing.price <= 0)
-      {
-         // Use range boundary as fallback
          targetSwing.price = (card.direction == TRADE_LONG) ? rangeHigh : rangeLow;
-      }
 
-      m_zone.CalculateTradeParams(card.activeOB, card.direction, targetSwing,
+      // housingSwing = the swing that contains the OB (SL goes beyond this)
+      // LONG: swing low below OB | SHORT: swing high above OB
+      SwingPoint housingSwing;
+      if(card.direction == TRADE_LONG)
+         m_swing.FindNearestSwingLow(htfLows, htfLowCount, card.activeOB.lowPrice, housingSwing);
+      else
+         m_swing.FindNearestSwingHigh(htfHighs, htfHighCount, card.activeOB.highPrice, housingSwing);
+
+      // Fallback: if no housing swing found, use OB edge with buffer
+      if(housingSwing.price <= 0)
+         housingSwing.price = (card.direction == TRADE_LONG) ? card.activeOB.lowPrice : card.activeOB.highPrice;
+
+      m_zone.CalculateTradeParams(card.activeOB, card.direction, targetSwing, housingSwing,
                                    card.entryPrice, card.stopLoss, card.takeProfit1, symbol);
 
       // 5. Risk:Reward (spread-adjusted)

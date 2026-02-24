@@ -143,27 +143,30 @@ public:
    }
 
    //--- Calculate entry, SL, TP from the order block
+   //    housingSwing = the swing low (for longs) or swing high (for shorts)
+   //    that contains the OB. SL goes beyond this swing, not the OB edge.
    void CalculateTradeParams(const OrderBlock &ob,
                               ENUM_TRADE_DIRECTION direction,
                               const SwingPoint &targetSwing,
+                              const SwingPoint &housingSwing,
                               double &entry, double &sl, double &tp,
                               const string symbol = "")
    {
-      // SL buffer: 30% of OB height, minimum 2x spread
+      // Small buffer beyond housing swing: 2x spread or 10% of OB height
       double obHeight = MathAbs(ob.highPrice - ob.lowPrice);
       double spreadBuf = (symbol != "") ? GetSpreadAsPrice(symbol) * 2.0 : obHeight * 0.10;
-      double buffer   = MathMax(obHeight * 0.30, spreadBuf);
+      double buffer   = MathMax(obHeight * 0.10, spreadBuf);
 
       if(direction == TRADE_LONG)
       {
          entry = ob.highPrice;              // Entry at top of OB
-         sl    = ob.lowPrice - buffer;      // SL below OB with buffer
+         sl    = housingSwing.price - buffer; // SL below the swing low housing the OB
          tp    = targetSwing.price;         // Previous swing high
       }
       else
       {
          entry = ob.lowPrice;              // Entry at bottom of OB
-         sl    = ob.highPrice + buffer;    // SL above OB with buffer
+         sl    = housingSwing.price + buffer; // SL above the swing high housing the OB
          tp    = targetSwing.price;        // Previous swing low
       }
    }
