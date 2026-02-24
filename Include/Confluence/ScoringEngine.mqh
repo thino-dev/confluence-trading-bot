@@ -169,7 +169,7 @@ public:
       }
 
       m_zone.CalculateTradeParams(card.activeOB, card.direction, targetSwing,
-                                   card.entryPrice, card.stopLoss, card.takeProfit1);
+                                   card.entryPrice, card.stopLoss, card.takeProfit1, symbol);
 
       // 5. Risk:Reward (spread-adjusted)
       card.spreadAtAnalysis = GetSpreadAsPrice(symbol);

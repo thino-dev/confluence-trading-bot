@@ -146,19 +146,25 @@ public:
    void CalculateTradeParams(const OrderBlock &ob,
                               ENUM_TRADE_DIRECTION direction,
                               const SwingPoint &targetSwing,
-                              double &entry, double &sl, double &tp)
+                              double &entry, double &sl, double &tp,
+                              const string symbol = "")
    {
+      // SL buffer: 30% of OB height, minimum 2x spread
+      double obHeight = MathAbs(ob.highPrice - ob.lowPrice);
+      double spreadBuf = (symbol != "") ? GetSpreadAsPrice(symbol) * 2.0 : obHeight * 0.10;
+      double buffer   = MathMax(obHeight * 0.30, spreadBuf);
+
       if(direction == TRADE_LONG)
       {
-         entry = ob.highPrice;          // Limit at top of OB
-         sl    = ob.lowPrice;           // Below OB low
-         tp    = targetSwing.price;     // Previous swing high
+         entry = ob.highPrice;              // Entry at top of OB
+         sl    = ob.lowPrice - buffer;      // SL below OB with buffer
+         tp    = targetSwing.price;         // Previous swing high
       }
       else
       {
-         entry = ob.lowPrice;           // Limit at bottom of OB
-         sl    = ob.highPrice;          // Above OB high
-         tp    = targetSwing.price;     // Previous swing low
+         entry = ob.lowPrice;              // Entry at bottom of OB
+         sl    = ob.highPrice + buffer;    // SL above OB with buffer
+         tp    = targetSwing.price;        // Previous swing low
       }
    }
 };
